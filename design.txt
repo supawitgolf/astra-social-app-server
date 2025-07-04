@@ -1,0 +1,15 @@
+Social Media Design Draft
+
+Database: posts
+- id: unique post ID (auto-increment)
+- author: text, all authors
+- title: text
+- content: text, cant be null
+- timestamp: datetime (int?)
+
+API
+- POST [/posts]: create a new post
+- GET [/posts]: get all posts
+- PUT [/posts/:id] update a post
+- DELETE [/posts/:id] delete a post
+- GET [/posts/range?from=...&to=...] get posts within timerange * not avail for now

@@ -1,3 +1,6 @@
+-- the goal of this .lua is to test the database connection
+
+
 -- -- connect to your db
 -- local db = Astra.database_connect("sqlite", "posts.db")
 
@@ -11,3 +14,5 @@
 -- local result = db:query_one("SELECT * FROM test;", {});
 
 -- pprint(result)
+local dt = Astra.datetime.new_utc_now()
+print(type(dt:to_datetime_string()))
