@@ -16,7 +16,8 @@ db:execute([[
         author TEXT NOT NULL,
         title TEXT,
         content TEXT NOT NULL,
-        timestamp INTEGER
+        timestamp INTEGER,
+        datetime text
     );
 ]], {});
 
@@ -28,6 +29,64 @@ db:execute([[
 server:get('/posts', function(_, res)
     local ok, result = pcall(function()
         return db:query_all('SELECT * FROM posts ORDER BY timestamp DESC', {})
+    end)
+
+    if not ok then
+        res:set_status_code(500)
+        return { error = 'Failed to fetch posts.' }
+    end
+
+    res:set_header('Content-Type', 'application/json')
+    return result
+end)
+
+-- by Post ID
+server:get('/posts/{id}', function(req, res)
+    local uri = req:uri()
+    local id = tonumber(string.match(uri, '^/posts/(%d+)$'))
+
+    local ok, result = pcall(function()
+        return db:query_one('SELECT * FROM posts WHERE id = $1', {id})
+    end)
+
+    if not ok then
+        res:set_status_code(500)
+        return { error = 'Failed to fetch posts.' }
+    end
+
+    res:set_header('Content-Type', 'application/json')
+    return result
+end)
+
+server:get('/posts/range', function(req, res)
+    local queries = req:queries()
+    local from_str = queries.from
+    local to_str = queries.to
+
+    local function text2timestamp(dt_str, eod)
+        local year, month, day = dt_str:match("(%d+)%-(%d+)%-(%d+)")
+        year = tonumber(year)
+        month = tonumber(month)
+        day = tonumber(day)
+        
+        local dt
+        if eod == true then 
+            dt = Astra.datetime.new_from(year, month, day, 23, 59, 59.999)
+        else
+            dt = Astra.datetime.new_from(year, month, day, 0, 0, 0)
+        end
+        return dt:get_epoch_milliseconds()
+    end
+
+    local from_ts = text2timestamp(from_str)
+    local to_ts = text2timestamp(to_str, true)
+
+    local ok, result = pcall(function()
+        return db:query_all([[
+            SELECT * FROM posts
+            WHERE timestamp BETWEEN $1 AND $2
+            ORDER BY timestamp DESC
+        ]], { from_ts, to_ts })
     end)
 
     if not ok then
@@ -54,11 +113,14 @@ server:post('/posts', function(req, res)
         return { error = 'Invalid input: ' .. tostring(err) }
     end
 
-    local timestamp = Astra.datetime.new_now():get_epoch_milliseconds()
+    local dt_now = Astra.datetime.new_now()
+    local timestamp = dt_now:get_epoch_milliseconds()
+    local datetime = dt_now:to_locale_datetime_string()
+
     db:execute([[
-        INSERT INTO posts (author, title, content, timestamp)
-        VALUES ($1, $2, $3, $4);
-    ]], { data.author, data.title, data.content, timestamp });
+        INSERT INTO posts (author, title, content, timestamp, datetime)
+        VALUES ($1, $2, $3, $4, $5);
+    ]], { data.author, data.title, data.content, timestamp, datetime });
 
     res:set_status_code(200)
     res:set_header('Content-Type', 'application/json')
@@ -69,8 +131,7 @@ end)
 server:put('/posts/{id}', function(req, res)
     local uri = req:uri()
     local id = tonumber(string.match(uri, '^/posts/(%d+)$'))
-    -- local id = tonumber(req:params('id'))
-    -- print(uri, id)
+
     if not id then
         res:set_status_code(400)
         return { error = 'Invalid post ID' }
@@ -90,7 +151,7 @@ server:put('/posts/{id}', function(req, res)
         return { error = 'Invalid input: ' .. tostring(err) }
     end
 
-    -- check popst existence
+    -- check post existence
     local ok, post = pcall(function()
         return db:query_one('SELECT 1 FROM posts WHERE id = $1', {id})
     end)
@@ -120,7 +181,41 @@ server:put('/posts/{id}', function(req, res)
     return { status = 'updated', id = id }
 end)
 
+server:delete('/posts/{id}', function(req, res)
+    local uri = req:uri()
+    local id = tonumber(string.match(uri, '^/posts/(%d+)$'))
+    
+    if not id then
+        res:set_status_code(400)
+        return { error = 'Invalid post ID' }
+    end
 
+    -- check post existence
+    local ok, post = pcall(function()
+        return db:query_one('SELECT 1 FROM posts WHERE id = $1', {id})
+    end)
+    
+    if not ok or not post then
+        res:set_status_code(404)
+        return { error = 'Post not found.' }
+    end
+
+    local ok, _ = pcall(function()
+        return db:execute([[
+            DELETE FROM posts
+            WHERE id = $1
+        ]], { id })
+    end)
+    
+    if not ok then
+        res:set_status_code(500)
+        return { error = 'Failed to delete post.' }
+    end
+
+    res:set_status_code(200)
+    return { status = 'deleted', id = id }
+
+end)
 
 
 
