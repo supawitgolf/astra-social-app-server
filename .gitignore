@@ -1,4 +1,4 @@
-posts.db*
+*.db*
 test.lua
 
 client/node_modules/

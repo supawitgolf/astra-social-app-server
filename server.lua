@@ -1,3 +1,5 @@
+local config = require('config')
+
 -- Create a new server
 local server = Astra.http.server:new()
 
@@ -9,7 +11,7 @@ end)
 -- Configure the server
 server.port = 3000
 
-local db = Astra.database_connect('sqlite', 'posts.db')
+local db = Astra.database_connect('sqlite', config.db_file)
 db:execute([[
     CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
