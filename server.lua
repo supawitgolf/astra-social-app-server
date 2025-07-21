@@ -160,7 +160,7 @@ server:put('/posts/{id}', function(req, res)
     
     if not ok or not post then
         res:set_status_code(404)
-        return { error = 'Post not found.' }
+        return { error = 'Post not found' }
     end
 
     local ok, _ = pcall(function()
@@ -175,12 +175,12 @@ server:put('/posts/{id}', function(req, res)
     
     if not ok then
         res:set_status_code(500)
-        return { error = 'Failed to update post.' }
+        return { error = 'Failed to update post' }
     end
 
     res:set_status_code(200)
     res:set_header('Content-Type', 'application/json')
-    return { status = 'updated', id = id }
+    return { status = 'Updated', id = id }
 end)
 
 server:delete('/posts/{id}', function(req, res)
@@ -199,7 +199,7 @@ server:delete('/posts/{id}', function(req, res)
     
     if not ok or not post then
         res:set_status_code(404)
-        return { error = 'Post not found.' }
+        return { error = 'Post not found' }
     end
 
     local ok, _ = pcall(function()
@@ -211,14 +211,13 @@ server:delete('/posts/{id}', function(req, res)
     
     if not ok then
         res:set_status_code(500)
-        return { error = 'Failed to delete post.' }
+        return { error = 'Failed to delete post' }
     end
 
     res:set_status_code(200)
-    return { status = 'deleted', id = id }
+    return { status = 'Deleted', id = id }
 
 end)
-
 
 
 -- Run the server
