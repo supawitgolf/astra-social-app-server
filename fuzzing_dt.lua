@@ -109,7 +109,7 @@ summary(logs, 'fuzz_summ_new_utc_from.txt')
 
 local function fuzz_set_year(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_year(arg) end)
@@ -123,7 +123,7 @@ summary(logs, 'fuzz_summ_set_year.txt')
 
 local function fuzz_set_month(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_month(arg) end)
@@ -137,7 +137,7 @@ summary(logs, 'fuzz_summ_set_month.txt')
 
 local function fuzz_set_hour(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_hour(arg) end)
@@ -151,7 +151,7 @@ summary(logs, 'fuzz_summ_set_hour.txt')
 
 local function fuzz_set_minute(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_minute(arg) end)
@@ -165,7 +165,7 @@ summary(logs, 'fuzz_summ_set_minute.txt')
 
 local function fuzz_set_second(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_second(arg) end)
@@ -179,7 +179,7 @@ summary(logs, 'fuzz_summ_set_second.txt')
 
 local function fuzz_set_millisecond(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_millisecond(arg) end)
@@ -193,7 +193,7 @@ summary(logs, 'fuzz_summ_set_millisecond.txt')
 
 local function fuzz_set_epoch_millisecond(iterations)
     local logs = {}
-    local dt = Astra.datetime.new_now()
+    local dt = Astra.datetime.new()
     for i = 1, iterations do
         local arg, type = random_value()
         local ok, err = pcall(function() dt:set_epoch_millisecond(arg) end)
