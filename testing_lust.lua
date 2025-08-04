@@ -1,7 +1,7 @@
 local lust = require 'lust'
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
--- Define the custom assertion
+-- define the custom assertion - check str contain (not provided on lust)
 lust.paths.contain = {
     test = function(str, substr)
       local ok = type(str) == 'string' and type(substr) == 'string' and str:find(substr, 1, true) ~= nil
